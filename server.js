@@ -37,7 +37,16 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+app.listen(process.env.PORT, () => {
+  const baseURL = process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${process.env.PORT}`;
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on port ${process.env.PORT}`)
-);
+  console.log({
+    status: "Server is running 🚀",
+    port: process.env.PORT,
+    environment: process.env.NODE_ENV || "development",
+    baseURL: baseURL,
+    timestamp: new Date().toISOString(),
+  });
+});
