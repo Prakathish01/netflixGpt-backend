@@ -4,7 +4,16 @@ require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
-app.use(cors());
+
+// ✅ Correct CORS setup (Node 22 compatible)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
 app.use(express.json());
 
 const ai = new GoogleGenAI(process.env.GEMINI_API_KEY);
@@ -29,24 +38,11 @@ app.post("/api/movies", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-app.get("/health", (req, res) => {
-  res.json({
-    status: "Server is running 🚀",
-    port: process.env.PORT,
-    environment: process.env.NODE_ENV || "development",
-    timestamp: new Date().toISOString(),
-  });
-});
-app.listen(process.env.PORT, () => {
-  const baseURL = process.env.RAILWAY_PUBLIC_DOMAIN
-    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-    : `http://localhost:${process.env.PORT}`;
 
-  console.log({
-    status: "Server is running 🚀",
-    port: process.env.PORT,
-    environment: process.env.NODE_ENV || "development",
-    baseURL: baseURL,
-    timestamp: new Date().toISOString(),
-  });
+app.get("/health", (req, res) => {
+  res.json({ status: "Server is running 🚀" });
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });
